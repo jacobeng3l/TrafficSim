@@ -1,4 +1,7 @@
 // Imports
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import javafx.scene.paint.Color;
 
 /**
@@ -10,7 +13,9 @@ import javafx.scene.paint.Color;
 public abstract class Vehicle {
 
 	// The acceleration value of the car 
-	private double acceleration;
+	private double maxAcceleration;
+	
+	private double acceleration; 
 	
 	// Vehicle Color
 	private Color color; 
@@ -25,7 +30,11 @@ public abstract class Vehicle {
 	private double direction; 
 	
 	// The velocity that the car is currently traveling at 
-	private double velocity; 
+	private double velocity;
+	
+	private double deacceleration; 
+	
+	private Vector[][] marks = new Vector[3][3];
 	
 	// The unique car ID
 	private int carID; 
@@ -38,6 +47,8 @@ public abstract class Vehicle {
 	// The rear location of the vehicle 
 	private double rear; 
 	
+	private LinkedList<Intersection> intersectLoc = new LinkedList<>(); 
+	
 	/**
 	 * A constructor for stationary vehicles 
 	 * @param acceleration The maximum acceleration of the vehicle 
@@ -46,14 +57,17 @@ public abstract class Vehicle {
 	 * @param location The location of the vehicle 
 	 * @param direction The orientation of the vehicle 
 	 */
-	public Vehicle(double acceleration, Color color, double length, Location location, double direction) {
-		this.acceleration = acceleration; 
+	public Vehicle(double maxAcceleration, double deacceleration, Color color, double length, Location location, double direction) {
+		this.maxAcceleration = maxAcceleration; 
+		this.deacceleration = deacceleration; 
 		this.color = color; 
 		this.length = length; 
 		this.location = location; 
 		this.direction = direction; 
 		velocity = 0; 
 		carID = totID++; 
+		
+		makeGrid(); 
 	}
 	
 	/**
@@ -65,17 +79,17 @@ public abstract class Vehicle {
 	 * @param direction The orientation of the vehicle 
 	 * @param velocity An initial velocity of the vehicle 
 	 */
-	public Vehicle(double acceleration, Color color, double length, Location location, double direction, double velocity) {
-		this(acceleration, color, length, location, direction); 
+	public Vehicle(double maxAcceleration, double deacceleration, Color color, double length, Location location, double direction, double velocity) {
+		this(maxAcceleration, deacceleration, color, length, location, direction); 
 		this.velocity = velocity; 
 	}
 
-	public double getAcceleration() {
-		return acceleration;
+	public double getMaxAcceleration() {
+		return maxAcceleration;
 	}
 
-	public void setAcceleration(double acceleration) {
-		this.acceleration = acceleration;
+	public void setMaxAcceleration(double acceleration) {
+		this.maxAcceleration = acceleration;
 	}
 	
 	public Color getColor() {
@@ -178,5 +192,52 @@ public abstract class Vehicle {
 		else
 			return false; 
 	}
+
+	public Vector[][] getMarks() {
+		return marks;
+	}
+
+	public void setMarks(Vector[][] marks) {
+		this.marks = marks;
+	}
+	
+	public abstract void makeGrid();
+
+	public double getAcceleration() {
+		return acceleration;
+	}
+
+	public void setAcceleration(double acceleration) {
+		this.acceleration = acceleration;
+	}
+
+	public void configureIntersection(LinkedList<Intersection> intersects) {
+		// TODO Auto-generated method stub
+		Iterator<Intersection> iter = intersects.iterator(); 
+		while(iter.hasNext()) {
+			Intersection inter = iter.next(); 
+			Iterator<Motorway> motorways = inter.getMotorway().iterator(); 
+			while(motorways.hasNext()) {
+				if(this.getLocation().getMotorway().equals(motorways.next()))
+					this.getIntersectLoc().add(inter);
+			}
+		}
+	}
+
+	public LinkedList<Intersection> getIntersectLoc() {
+		return intersectLoc;
+	}
+
+	public void setIntersectLoc(LinkedList<Intersection> intersectLoc) {
+		this.intersectLoc = intersectLoc;
+	}
+
+	public double getDeacceleration() {
+		return deacceleration;
+	}
+
+	public void setDeacceleration(double deacceleration) {
+		this.deacceleration = deacceleration;
+	} 
 		
 }

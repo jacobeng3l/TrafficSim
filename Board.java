@@ -113,10 +113,24 @@ public class Board extends Application {
 		while(ways.hasNext()) 
 			drawMotorway(ways.next()); 
 		
+		Iterator<Intersection> inters = map.getIntersects().iterator();
+		while(inters.hasNext())
+			drawIntersects(inters.next());
+		
 		Iterator<Vehicle> ves = map.getVehicles().iterator();
 		while(ves.hasNext())
 			drawVehicles(ves.next()); 
 
+	}
+
+	private void drawIntersects(Intersection next) {
+		Vector[][] grid = next.getMarks(); 
+		gc.setFill(Color.BLACK);
+		// For some reason this is unlike the others, too tired to fix now 
+		gc.fillRect(convertToWidth(grid[0][0].getX() - 1), 
+				convertToHeight(grid[0][0].getY() - 1), 
+				convertToWidth(grid[0][2].getY() + 2) - convertToWidth(grid[0][0].getY()),
+				convertToHeight(grid[2][0].getX() + 2) - convertToHeight(grid[0][0].getX()));
 	}
 
 	/**
@@ -124,9 +138,17 @@ public class Board extends Application {
 	 * @param ve A vehicle to the drawn on the board
 	 */
 	private void drawVehicles(Vehicle ve) {
+		Vector[][] grid = ve.getMarks(); 
+		gc.setFill(ve.getColor());
+		gc.fillRect(convertToWidth(grid[0][0].getX()), 
+				convertToHeight(grid[0][0].getY()), 
+				convertToWidth(grid[0][2].getX()) - convertToWidth(grid[0][0].getX()),
+				convertToHeight(grid[2][0].getY()) - convertToHeight(grid[0][0].getY()));
+	}
+/*	private void drawVehicles(Vehicle ve) {
 		gc.setFill(ve.getColor());
 		if(!ve.getLocation().getMotorway().isVertical()) {
-			double dist = (ve.getLocation().getDistance() / 100.) * width; 
+			double dist = convertToWidth(ve.getLocation().getDistance()); 
 			int unit = (int) (height / 24); 
 			double roadDis = (ve.getLocation().getMotorway().getLocation() / 100.) * height;
 			if(ve.getDirection() > 0 && ve.getDirection() != 180)
@@ -135,7 +157,7 @@ public class Board extends Application {
 				gc.fillRoundRect(dist + unit, roadDis - ((height / 65) + unit), 2 * (width / 40), unit, height / 100, height / 100);
 		}
 		else {
-			double dist = (ve.getLocation().getDistance() / 100.) * height; 
+			double dist = convertToHeight(ve.getLocation().getDistance()); 
 			int unit = (int) (width / 36); 
 			double roadDis = (ve.getLocation().getMotorway().getLocation() / 100.) * width;
 			if(ve.getDirection() > 0 && ve.getDirection() != 180)
@@ -143,12 +165,50 @@ public class Board extends Application {
 			else if(ve.getDirection() < 0 && ve.getDirection() != 180)
 				gc.fillRoundRect(roadDis + (width / 60), dist - unit, unit, 2 * (height / 27), width / 150, width / 150);
 		}
-	}
+	}*/
 
 	/**
 	 * Draws a visual representation of a motorway on the board. 
 	 * @param way A Motorway to be drawn on the board. 
 	 */
+	private void drawMotorway(Motorway way) {
+		Vector[][] grid = way.getMarks(); 
+		
+		gc.setFill(Color.SADDLEBROWN);
+		gc.fillRect(convertToWidth(grid[0][0].getX() - 1), 
+				convertToHeight(grid[0][0].getY() - 1), 
+				convertToWidth(grid[0][2].getX() + 1) - convertToWidth(grid[0][0].getX() - 1),
+				convertToHeight(grid[2][0].getY() + 2) - convertToHeight(grid[0][0].getY()) - 1);
+		
+		gc.setFill(Color.BLACK);
+		gc.fillRect(convertToWidth(grid[0][0].getX()), 
+				convertToHeight(grid[0][0].getY()), 
+				convertToWidth(grid[0][2].getX()) - convertToWidth(grid[0][0].getX()),
+				convertToHeight(grid[2][0].getY()) - convertToHeight(grid[0][0].getY()));
+		
+		gc.setFill(Color.YELLOW);
+		if(way.isVertical()) { 
+			gc.fillRect(convertToWidth(grid[0][0].getX() + (Road.size - .2)), 
+					convertToHeight(grid[0][0].getY()), 
+					convertToWidth(0.1),
+					convertToHeight(grid[2][0].getY() + 2) - convertToHeight(grid[0][0].getY()) - 1); 
+			gc.fillRect(convertToWidth(grid[0][0].getX() + (Road.size + 0.1)), 
+					convertToHeight(grid[0][0].getY()), 
+					convertToWidth(0.1),
+					convertToHeight(grid[2][0].getY() + 2) - convertToHeight(grid[0][0].getY()) - 1); 
+		}
+		else {
+			gc.fillRect(convertToWidth(grid[0][0].getX()), 
+					convertToHeight(grid[0][0].getY() + (Road.size + 0.1)), 
+					convertToWidth(grid[0][2].getX()) - convertToWidth(grid[0][0].getX()),
+					convertToHeight(0.1));
+			gc.fillRect(convertToWidth(grid[0][0].getX()), 
+					convertToHeight(grid[0][0].getY() + (Road.size - 0.2)), 
+					convertToWidth(grid[0][2].getX()) - convertToWidth(grid[0][0].getX()),
+					convertToHeight(0.1));
+		}
+	}
+	/*
 	private void drawMotorway(Motorway way) {
 		if(!way.isVertical()) {
 			int widthPerLane = (int) (height / 15); 
@@ -162,8 +222,8 @@ public class Board extends Application {
 			// Need to address uneven laned roads 
 			if(way.getLanes() % 2 == 0) {
 				gc.setFill(Color.YELLOW);
-				gc.fillRect(0, ((way.getLocation() / 100.) * height) - (height / 500), width, (height / 200));
-				gc.fillRect(0, ((way.getLocation() / 100.) * height) + (height / 180), width, (height / 200));
+				gc.fillRect(0, convertToHeight(way.getLocation()) - (height / 500), width, (height / 200));
+				gc.fillRect(0, convertToHeight(way.getLocation()) + (height / 180), width, (height / 200));
 			}
 		}
 		else {
@@ -182,7 +242,7 @@ public class Board extends Application {
 			}
 		}
 	}
-	
+	*/
 	/**
 	 * Takes the long form time from the animation timer and converts it seconds which can be more useful. 
 	 * Requires the initial time when the animation timer starts, saved as initTime
@@ -191,6 +251,14 @@ public class Board extends Application {
 	public void updateTime(long now) {
 		currentTime = (long) ((now - initTime) / 10000.);
 		currentTime = currentTime / 100000.;
+	}
+	
+	private double convertToWidth(double loc) {
+		return ((loc / 100.) * width); 
+	}
+	
+	private double convertToHeight(double loc) {
+		return ((loc / 100.) * height);
 	}
 
 	/**

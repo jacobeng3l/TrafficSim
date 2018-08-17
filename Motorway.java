@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 /**
  * An abstract Motorway class for generic purposes 
  * @author Jacob Engelbrecht 
@@ -15,11 +17,33 @@ public abstract class Motorway {
 	// The speed limit of the road 
 	private int speedLimit; 
 	
+	public double width; 
+	
 	// The placement of the road on the board 
 	private double location; 
 	
+	LinkedList<Vehicle> vehicles = new LinkedList<>(); 
+	
+	public LinkedList<Vehicle> getVehicles() {
+		return vehicles;
+	}
+
+	public void setVehicles(LinkedList<Vehicle> vehicles) {
+		this.vehicles = vehicles;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
+
 	// Whether or not it is a simple vertical of horizontal road (to be replaced by enum for more complicated roads )
 	private boolean isVertical; 
+	
+	private Vector[][] marks = new Vector[3][3];
 	
 	// Unique ID for all roads 
 	private int roadID;
@@ -34,13 +58,16 @@ public abstract class Motorway {
 	 * @param location Where the road is on the board 
 	 * @param isVertical Whether or not the road is vertical 
 	 */
-	public Motorway(int lanes, boolean shoulder, int speedLimit, double location, boolean isVertical) {
+	public Motorway(int lanes, boolean shoulder, int speedLimit, double location, boolean isVertical, double width) {
 		this.lanes = lanes; 
 		this.shoulder = shoulder; 
 		this.speedLimit = speedLimit; 
 		this.location = location;
 		this.isVertical = isVertical; 
+		this.width = width; 
 		roadID = totID++; 
+		
+		makeGrid(); 
 	}
 	
 	public int getLanes() {
@@ -102,6 +129,16 @@ public abstract class Motorway {
 		}
 		else
 			return false; 
+	}
+	
+	public abstract void makeGrid(); 
+
+	public Vector[][] getMarks() {
+		return marks;
+	}
+
+	public void setMarks(Vector[][] marks) {
+		this.marks = marks;
 	}
 	
 }
